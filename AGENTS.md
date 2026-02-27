@@ -257,7 +257,7 @@ bash build.sh Release
 
 ## 資料庫規範
 - 資料表名稱：複數、PascalCase，例如 `Products`、`Orders`、`OrderItems`。
-- 主鍵：`Id`（int IDENTITY）或 `{Table}Id`，例如 `ProductId`。
+- 主鍵：`Id`（int IDENTITY）或 `{Table}Id`，例如 `ProductId`。 
 - 外鍵：`{ReferencedTable}Id`，例如 `CategoryId`、`OrderId`。
 - 時間欄位：`CreatedAt`（建立時間）、`UpdatedAt`（最後更新時間），型別使用 `DATETIME2`。
 - 軟刪除欄位：`IsDeleted BIT NOT NULL DEFAULT 0`，不得直接 `DELETE` 資料列（除非有特殊需求）。
