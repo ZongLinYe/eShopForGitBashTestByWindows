@@ -126,6 +126,45 @@ graph TD
 - 此專案為 **.NET Framework** 專案，建置時 **MUST** 使用 `msbuild`，**禁止**使用 `dotnet` CLI 指令（`dotnet build`、`dotnet run` 等均不適用）。
 - 若要新增資料庫變更，**MUST** 提供 T-SQL 腳本，並放在 `DatabaseScripts` 資料夾中。
 
+### 如何在 Git Bash 執行 msbuild
+
+**背景說明**：Git Bash 無法直接執行路徑含空格的 Windows 可執行檔（MSBuild 位於 `C:\Program Files\...`），因此需要透過以下設定才能正常使用。
+
+**一次性環境設定**（已完成，毋需重複）：
+
+在 `~/.bash_profile` 新增 alias：
+
+```bash
+alias msbuild='MSYS_NO_PATHCONV=1 "/c/Program Files/Microsoft Visual Studio/18/Community/MSBuild/Current/Bin/MSBuild.exe"'
+```
+
+`MSYS_NO_PATHCONV=1` 防止 Git Bash 將 `/p:` `/t:` 等 MSBuild 參數誤認為 Unix 路徑並自動轉換。
+
+**建置指令**：
+
+```bash
+# 進入專案根目錄
+cd /d/VSCodeProject/GitBashWithMsbuildTest/eShop
+
+# Debug 模式（預設）
+bash build.sh
+
+# Release 模式
+bash build.sh Release
+```
+
+**`build.sh` 說明**：專案根目錄的 [build.sh](build.sh) 封裝了完整的建置邏輯，使用 `#!/bin/bash -l`（登入 shell）確保 `~/.bash_profile` 的 alias 被載入，並以 `/clp:ErrorsOnly` 過濾無關的版本衝突警告，只顯示真正的錯誤。
+
+**最新建置結果**：
+
+```
+=== eShop msbuild 開始 (Configuration: Debug) ===
+.NET Framework 的 MSBuild 版本 18.3.0-release-26070-10+3972042b7
+=== 建置成功 ===
+```
+
+0 個錯誤，輸出：`eShopWeb\bin\eShopWeb.dll`
+
 ---
 
 ## 版本控制規範
