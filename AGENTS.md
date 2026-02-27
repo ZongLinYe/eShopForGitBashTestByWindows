@@ -144,7 +144,7 @@ alias msbuild='MSYS_NO_PATHCONV=1 "/c/Program Files/Microsoft Visual Studio/18/C
 
 ```bash
 # 進入專案根目錄
-cd /d/VSCodeProject/GitBashWithMsbuildTest/eShop
+cd /d/VSCodeProject/GitBashWithMsbuildTest/eShop 
 
 # Debug 模式（預設）
 bash build.sh
