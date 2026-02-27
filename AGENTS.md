@@ -169,7 +169,19 @@ bash build.sh Release
 
 ## SpecKit 相關規範
 
-- We're going to be using slash command from `.github\\prompts\\`
+- We're going to be using slash command from `.github\\prompts\\` with VS Code
+- We're going to be using slash command from `.github\\skills\\` with github copilot cli
+- **所有由 SpecKit 產生的文件（spec、plan、checklist 等）一律使用 zh-TW 台灣用語撰寫**，確保甲方、SA、PM、PG 均能直接閱讀與理解業務需求。
+- 技術術語若無對應的慣用中文譯名（例如：Repository、ViewModel、Entity），可保留英文原文，但說明文字必須以中文補充。
+- 禁止使用中國大陸用語（如「组件」應改為「元件」、「获取」應改為「取得」、「实现」應改為「實作」）。
+
+---
+
+## OpenSpec 相關規範
+
+- **所有由 OpenSpec 產生的文件一律使用 zh-TW 台灣用語撰寫**，確保甲方、SA、PM、PG 均能直接閱讀與理解業務需求。
+- 技術術語若無對應的慣用中文譯名，可保留英文原文，但說明文字必須以中文補充。
+- 禁止使用中國大陸用語（如「组件」應改為「元件」、「获取」應改為「取得」、「实现」應改為「實作」）。
 
 ---
 
