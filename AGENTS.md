@@ -246,9 +246,13 @@ bash build.sh Release
 ---
 
 ## Entity Framework 6 規範
-- 採用 **Database First**：先設計資料庫，再由 EF6 反向工程產生 Entity 類別與 `DbContext`。
-- `DbContext` 放在 `eShop.Repositories` 專案中。
-- Entity 類別放在 `eShop.Domain` 專案中，**不得**包含 EF 導覽屬性以外的商業邏輯。
+- 採用 **Code First on Existing DB**：先以 T-SQL 腳本建立資料庫，再**手寫** Entity 類別與 `DbContext`，不使用 EDMX / `.tt` 反向工程自動產生，亦不執行 EF Migration（資料庫結構由 `DatabaseScripts/` 腳本管理）。
+- `DbContext` 放在 `eShop.Repositories` 專案中，`OnModelCreating` 負責表名映射等設定。
+- Entity 類別放在 `eShop.Domain` 專案中，屬性名稱 **MUST** 與對應資料表欄位名稱完全一致（或透過 `[Column("欄位名")]` 明確映射）。Entity **不得**包含 EF 導覽屬性以外的商業邏輯。
+- **導覽屬性（Navigation Properties）**：Entity 允許加入 `virtual` 導覽屬性以支援 EF6 Lazy Loading。**⚠️ 嚴禁** Repository 以外的程式碼直接觸發 Lazy Load；Repository 方法若需關聯資料，**MUST** 明確呼叫 `.Include()` 一次性載入，避免 N+1 查詢問題。
+- **軟刪除過濾**：Repository 每個查詢方法 **MUST** 明確加上 `.Where(x => !x.IsDeleted)`，禁止依賴 EF6 攔截器或其他隱式機制，確保過濾邏輯清晰可見、可測試。
+- **泛型 Repository 基底介面**：在 `eShop.Domain/Interfaces/Repositories/` 定義 `IRepository<T>` 泛型介面（含 `GetById`、`Add`、`Update`），各具體介面（`IUserRepository` 等）繼承並補充自訂方法。
+- **.csproj 手動維護**：.NET Framework 4.6.2 專案不會自動掃描新增檔案，每新增一個 `.cs` 檔案 **MUST** 在對應 `.csproj` 的 `<ItemGroup>` 中加入 `<Compile Include="..." />` 條目，否則 msbuild 不會編譯。
 - 所有資料庫變更 **MUST** 提供對應的 T-SQL 腳本放在 `DatabaseScripts` 資料夾，並使用版號命名，例如 `V001_CreateProductTable.sql`。
 - 所有新增資料表的 T-SQL 腳本，**MUST** 在每張資料表的建立區塊（`IF NOT EXISTS ... CREATE TABLE`）內，使用 `sys.sp_addextendedproperty` 加入 `MS_Description` 擴充屬性說明，涵蓋**資料表層級**與**所有欄位層級**，供 SSMS 物件總管及 `ALT+F1` 屬性面板直接閱讀。說明文字使用 zh-TW 台灣用語。
 - 連線字串統一放在 `eShopWeb/Web.config` 的 `<connectionStrings>` 區段，其他專案透過傳入方式取得，不得各自硬編碼。
@@ -261,6 +265,11 @@ bash build.sh Release
 - 外鍵：`{ReferencedTable}Id`，例如 `CategoryId`、`OrderId`。
 - 時間欄位：`CreatedAt`（建立時間）、`UpdatedAt`（最後更新時間），型別使用 `DATETIME2`。
 - 軟刪除欄位：`IsDeleted BIT NOT NULL DEFAULT 0`，不得直接 `DELETE` 資料列（除非有特殊需求）。
+- **索引規範**：以效能為優先，新增資料表的 T-SQL 腳本中，凡有下列情境者 **MUST** 同步建立對應索引：
+  - 唯一限制欄位（如 `Username`、`Email`、`Slug`）→ 建立 `UNIQUE INDEX`
+  - 外鍵欄位（如 `CategoryId`、`UserId`、`OrderId`）→ 建立一般索引，加速 JOIN 查詢
+  - 查詢條件中常用的篩選欄位（如 `IsDeleted`、`IsActive`、`Status`）→ 視資料量評估是否建立複合索引
+  - **禁止**在沒有索引的外鍵欄位上執行大量查詢，避免全表掃描（Full Table Scan）
 
 ---
 

@@ -46,12 +46,19 @@
 **eShop.Domain** 層新增：
 
 1. **Entities/**：`User.cs`、`TwoFactorToken.cs`、`Category.cs`、`Product.cs`、`Banner.cs`、`Order.cs`、`OrderItem.cs`（每個實體一個檔案，各有完整 XML 文件）
-2. **Interfaces/Repositories/**：`IUserRepository.cs`、`ICategoryRepository.cs`、`IProductRepository.cs`、`IBannerRepository.cs`、`IOrderRepository.cs`（含 CRUD 方法簽章）
+   - Entity 屬性名稱 **MUST** 與資料表欄位名稱完全一致
+   - 允許加入 `virtual` 導覽屬性（例如 `Product.Category`、`Order.OrderItems`），以支援 EF6 Lazy Loading；但所有導覽屬性的載入 **MUST** 在 Repository 層以 `.Include()` 明確控制，**⚠️ 嚴禁** Repository 外部觸發 Lazy Load，防止 N+1 查詢性能問題
+2. **Interfaces/Repositories/IRepository.cs**：泛型基底介面，定義 `T GetById(int id)`、`void Add(T entity)`、`void Update(T entity)` 三個通用方法
+3. **Interfaces/Repositories/**：`IUserRepository.cs`、`ICategoryRepository.cs`、`IProductRepository.cs`、`IBannerRepository.cs`、`IOrderRepository.cs`，各自繼承 `IRepository<T>` 並補充專屬查詢方法（如 `GetByUsername`、`GetBySlug`、`GetActiveAll` 等）
 
 **eShop.Repositories** 層新增：
 
-3. **eShop.Repositories/Data/EShopDbContext.cs**：繼承 `DbContext`，宣告所有 `DbSet<T>`，`OnModelCreating` 中設定表名映射與軟刪除過濾（全域 WHERE IsDeleted = 0 以 EF6 攔截器實作）
-4. **eShop.Repositories/Repositories/**：`UserRepository.cs`、`CategoryRepository.cs`、`ProductRepository.cs`、`BannerRepository.cs`、`OrderRepository.cs`，各自實作對應介面
+4. **eShop.Repositories/Data/EShopDbContext.cs**：繼承 `DbContext`，宣告所有 `DbSet<T>`，`OnModelCreating` 中設定表名映射（不使用 EF6 攔截器做全域軟刪除過濾）
+5. **eShop.Repositories/Repositories/**：`UserRepository.cs`、`CategoryRepository.cs`、`ProductRepository.cs`、`BannerRepository.cs`、`OrderRepository.cs`，各自實作對應介面
+   - 每個查詢方法 **MUST** 明確加上 `.Where(x => !x.IsDeleted)` 軟刪除過濾
+   - 需載入關聯資料時 **MUST** 使用 `.Include()` 一次性載入，禁止讓 Lazy Loading 在迴圈中觸發（N+1 問題）
+
+> **⚠️ .csproj 注意事項**：.NET Framework 4.6.2 不自動掃描新檔案。上述每個新增的 `.cs` 檔案均須在對應 `.csproj` 的 `<ItemGroup>` 中加入 `<Compile Include="..." />` 條目，否則 msbuild 不會編譯。
 
 ---
 
