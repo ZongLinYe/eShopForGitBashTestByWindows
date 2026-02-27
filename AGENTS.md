@@ -62,6 +62,7 @@ graph TD
 - Serilog 4.3.1 at Utility layer for logging
 - Serilog.Sinks.File 7.0.0 at Utility layer for file logging
 - Serilog.Sinks.MSSqlServer 9.0.3 at Utility layer for SQL Server logging
+- Autofac 9.0 + Autofac.Mvc5 6.10 at eShopWeb for DI
 
 ## 提醒
 - 若要新增資料庫， **MUST** 提供 T-SQL 腳本，並且放在 `DatabaseScripts` 資料夾中。
@@ -107,7 +108,7 @@ graph TD
 - Controller 依據 `IsSuccess` 決定顯示成功訊息或錯誤訊息，不直接 catch Service 的例外。
 
 ## Entity Framework 6 規範
-- 採用 **Database First** 或 **Code First**，請在開發前確認並在此處補充。
+- 採用 **Database First**：先設計資料庫，再由 EF6 反向工程產生 Entity 類別與 `DbContext`。
 - `DbContext` 放在 `eShop.Repositories` 專案中。
 - Entity 類別放在 `eShop.Domain` 專案中，**不得**包含 EF 導覽屬性以外的商業邏輯。
 - 所有資料庫變更 **MUST** 提供對應的 T-SQL 腳本放在 `DatabaseScripts` 資料夾，並使用版號命名，例如 `V001_CreateProductTable.sql`。
@@ -128,8 +129,9 @@ graph TD
 ## 相依性注入（DI）
 ASP.NET MVC 5 內建不支援 DI Container，採用以下方式：
 - 使用 **建構子注入（Constructor Injection）**，禁止使用 Service Locator 反模式。
-- DI 容器選擇（請在開始前確認）：推薦 **Unity** 或 **SimpleInjector**，設定於 `App_Start/UnityConfig.cs`（或對應檔案）。
-- 介面定義於 `eShop.Domain` 或各層內部，實作於對應層，組裝於 `eShopWeb` 的 DI 設定。
+- DI 容器使用 **Autofac**，安裝套件：`Autofac`、`Autofac.Mvc5`，僅安裝於 **eShopWeb** 專案。
+- DI 設定統一放在 `eShopWeb/App_Start/AutofacConfig.cs`，並在 `Global.asax` 的 `Application_Start` 中呼叫。
+- 介面定義於 `eShop.Domain` 或各層內部，實作於對應層，組裝（註冊）於 `AutofacConfig.cs`。
 
 ## 前端規範
 - **禁止使用 jQuery**，一律使用 VanillaJS（`document.querySelector`、`fetch API` 等）。
@@ -142,4 +144,18 @@ ASP.NET MVC 5 內建不支援 DI Container，採用以下方式：
 - Controller **MUST** 使用 ViewModel 與 View 溝通，禁止將 Domain Entity 直接傳入 View。
 - ViewModel 放在 `eShopWeb/Models/` 資料夾，依功能分子資料夾，例如 `Models/Product/`、`Models/Order/`。
 - ViewModel 不包含商業邏輯，僅作資料傳遞用途。
-- 展示層的 `ModelState` 驗證（DataAnnotations）與 Service 層的 FluentValidation 驗證各司其職，不重複。
+- 表單驗證**統一使用 FluentValidation**（位於 `eShop.Services` 層），ViewModel **不使用** DataAnnotations 驗證屬性（`[Required]`、`[StringLength]` 等）。
+- Controller 將驗證錯誤從 `ServiceResult` 轉寫入 `ModelState`，再回傳 View 顯示。
+
+## 會員角色規範
+系統共定義四種角色，統一以 `enum` 定義於 `eShop.Domain` 專案中。
+
+| 角色 | 說明 | 權限範圍 |
+|------|------|----------|
+| **Member**（一般會員） | 完成註冊的一般使用者 | 瀏覽商品、下訂單、管理個人資料 |
+| **VipMember**（VIP 會員） | 具有 VIP 資格的會員 | 同一般會員，另享有 VIP 專屬折扣與功能 |
+| **Admin**（一般管理員） | 後台操作人員 | 管理商品、訂單、一般會員資料 |
+| **SuperAdmin**（最高管理員） | 系統最高權限 | 包含所有功能，另可管理管理員帳號與系統設定 |
+
+- 角色名稱（字串）使用英文，與 `[Authorize(Roles = "...")]` 對應。
+- 禁止在程式中 hardcode 角色字串，統一透過常數類別或 `enum.ToString()` 取得。
