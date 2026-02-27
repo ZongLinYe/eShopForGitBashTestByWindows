@@ -42,10 +42,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Entities\Banner.cs" />
+    <Compile Include="Entities\Category.cs" />
+    <Compile Include="Entities\Order.cs" />
+    <Compile Include="Entities\OrderItem.cs" />
+    <Compile Include="Entities\Product.cs" />
+    <Compile Include="Entities\TwoFactorToken.cs" />
+    <Compile Include="Entities\User.cs" />
     <Compile Include="Enums\OrderStatus.cs" />
     <Compile Include="Enums\TwoFactorMethod.cs" />
     <Compile Include="Enums\UserRole.cs" />
+    <Compile Include="Interfaces\Repositories\IBannerRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ICategoryRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IOrderRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProductRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IUserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
