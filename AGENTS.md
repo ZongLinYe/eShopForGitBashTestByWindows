@@ -250,6 +250,7 @@ bash build.sh Release
 - `DbContext` 放在 `eShop.Repositories` 專案中。
 - Entity 類別放在 `eShop.Domain` 專案中，**不得**包含 EF 導覽屬性以外的商業邏輯。
 - 所有資料庫變更 **MUST** 提供對應的 T-SQL 腳本放在 `DatabaseScripts` 資料夾，並使用版號命名，例如 `V001_CreateProductTable.sql`。
+- 所有新增資料表的 T-SQL 腳本，**MUST** 在每張資料表的建立區塊（`IF NOT EXISTS ... CREATE TABLE`）內，使用 `sys.sp_addextendedproperty` 加入 `MS_Description` 擴充屬性說明，涵蓋**資料表層級**與**所有欄位層級**，供 SSMS 物件總管及 `ALT+F1` 屬性面板直接閱讀。說明文字使用 zh-TW 台灣用語。
 - 連線字串統一放在 `eShopWeb/Web.config` 的 `<connectionStrings>` 區段，其他專案透過傳入方式取得，不得各自硬編碼。
 
 ---
