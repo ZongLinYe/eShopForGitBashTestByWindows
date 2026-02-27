@@ -167,6 +167,12 @@ bash build.sh Release
 
 ---
 
+## SpecKit 相關規範
+
+- We're going to be using slash command from `.github\\prompts\\`
+
+---
+
 ## 版本控制規範
 
 - **完成一個完整功能後，必須先執行 `msbuild` 確認建置成功，才可 `git commit`**，禁止在建置失敗的狀態下提交。
