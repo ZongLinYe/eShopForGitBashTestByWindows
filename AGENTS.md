@@ -54,7 +54,7 @@ graph TD
 - Visual Studio 2026
 - SQL Server
 - Entity Framework 6
-- Bootstrap v5.2.3
+- no Bootstrap
 - VanillaJS
 - no jQuery
 - HTML5 / CSS3
