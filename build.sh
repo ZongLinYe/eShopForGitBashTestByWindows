@@ -11,7 +11,7 @@ MSBUILD="/c/Program Files/Microsoft Visual Studio/18/Community/MSBuild/Current/B
 
 echo "=== eShop msbuild 開始 (Configuration: $CONFIGURATION) ==="
 
-MSYS_NO_PATHCONV=1 "$MSBUILD" eShop.slnx /p:Configuration=$CONFIGURATION /v:minimal
+MSYS_NO_PATHCONV=1 "$MSBUILD" eShop.slnx /p:Configuration=$CONFIGURATION /v:minimal /clp:ErrorsOnly
 
 if [ $? -eq 0 ]; then
     echo "=== 建置成功 ==="
