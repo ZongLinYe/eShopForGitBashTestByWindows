@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="eShop.Domain/eShop.Domain.csproj" Id="d5a4c9f5-45fa-4b61-b140-538825b43a20" />
+  <Project Path="eShop.Repositories/eShop.Repositories.csproj" Id="f6d1020e-9878-4ba1-93f3-0dd6124c5133" />
+  <Project Path="eShop.Services/eShop.Services.csproj" Id="6d36dd39-dfd4-48e7-a3cc-82dadb42d466" />
+  <Project Path="eShop.Utility/eShop.Utility.csproj" Id="e40a60a1-2f7e-49ea-aef4-df52f0ec6945" />
+  <Project Path="eShopWeb/eShopWeb.csproj" Id="55197e14-0238-4f77-9a85-9f5880481054" />
+</Solution>
