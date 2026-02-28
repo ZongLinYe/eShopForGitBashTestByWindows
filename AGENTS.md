@@ -144,26 +144,14 @@ alias msbuild='MSYS_NO_PATHCONV=1 "/c/Program Files/Microsoft Visual Studio/18/C
 
 ```bash
 # 進入專案根目錄
-cd /d/VSCodeProject/GitBashWithMsbuildTest/eShop 
+cd /d/VSCodeProject/GitBashWithMsbuildTest/eShop
 
 # Debug 模式（預設）
-bash build.sh
+msbuild eShop.slnx /p:Configuration=Debug
 
 # Release 模式
-bash build.sh Release
+msbuild eShop.slnx /p:Configuration=Release
 ```
-
-**`build.sh` 說明**：專案根目錄的 [build.sh](build.sh) 封裝了完整的建置邏輯，使用 `#!/bin/bash -l`（登入 shell）確保 `~/.bash_profile` 的 alias 被載入，並以 `/clp:ErrorsOnly` 過濾無關的版本衝突警告，只顯示真正的錯誤。
-
-**最新建置結果**：
-
-```
-=== eShop msbuild 開始 (Configuration: Debug) ===
-.NET Framework 的 MSBuild 版本 18.3.0-release-26070-10+3972042b7
-=== 建置成功 ===
-```
-
-0 個錯誤，輸出：`eShopWeb\bin\eShopWeb.dll`
 
 ---
 
