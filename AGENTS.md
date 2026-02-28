@@ -288,7 +288,7 @@ ASP.NET MVC 5 內建不支援 DI Container，採用以下方式：
 - DI 容器使用 **Autofac**，安裝套件：`Autofac`、`Autofac.Mvc5`，僅安裝於 **eShopWeb** 專案。
 - DI 設定統一放在 `eShopWeb/App_Start/AutofacConfig.cs`，並在 `Global.asax` 的 `Application_Start` 中呼叫。
 - 介面定義於 `eShop.Domain` 或各層內部，實作於對應層，組裝（註冊）於 `AutofacConfig.cs`。
-- 其他專案（Services、Repositories）不需安裝 Autofac，僅依賴介面與建構子注入。
+- 其他專案（Services、Repositories）不需安裝 Autofac，僅依賴介面與建構子注入。 
 
 ---
 
